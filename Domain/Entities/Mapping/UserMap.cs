@@ -43,12 +43,14 @@ public class UserMap : IEntityTypeConfiguration<User>
             .HasColumnType("varchar")
             .HasMaxLength(50)
             .IsRequired();
+        builder.HasIndex(u => u.Email).IsUnique();
 
         builder.Property(x => x.Username)
             .HasColumnName("username")
             .HasColumnType("varchar")
             .HasMaxLength(15)
             .IsRequired();
+        builder.HasIndex(u => u.Username).IsUnique();
 
         builder.Property(x => x.Password)
             .HasColumnName("password")
