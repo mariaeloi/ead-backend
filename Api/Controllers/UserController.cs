@@ -1,4 +1,6 @@
+using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Services;
 
 namespace Api.Controllers;
 
@@ -14,8 +16,15 @@ public class UserController : ControllerBase
     /// Buscar todos os usuários
     /// </summary>
     [HttpGet]
-    public IActionResult GetAll()
+    public IActionResult GetAll([FromServices] UserService service)
     {
-        return NotFound("Nenhum dado encontrado.");
+        List<User> users = new List<User>();
+        try {
+            users = service.FindAll();
+        } catch (Exception e) {
+            return NotFound(e.Message);
+        }
+        
+        return Ok(users);
     }
 }

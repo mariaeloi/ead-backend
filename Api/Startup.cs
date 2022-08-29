@@ -1,7 +1,9 @@
 using System.Reflection;
 using Infra.Contexts;
+using Infra.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Services;
 
 namespace Api;
 
@@ -39,6 +41,9 @@ public class Startup
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             options.IncludeXmlComments(xmlPath);
         });
+
+        services.AddTransient<UserService>();
+        services.AddTransient<UserRepository>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
