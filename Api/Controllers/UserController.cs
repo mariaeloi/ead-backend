@@ -19,4 +19,3 @@ public class UserController : ControllerBase
         return NotFound("Nenhum dado encontrado.");
     }
 }
-
