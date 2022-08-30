@@ -1,10 +1,11 @@
-using System.Linq.Expressions;
+using Domain.Entities;
 using Infra.Contexts;
+using Infra.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Repositories;
 
-public class Repository<T> where T : class
+public class Repository<T> : IRepository<T> where T : Entity
 {
     protected readonly AppDbContext context;
 
@@ -16,42 +17,41 @@ public class Repository<T> where T : class
         dbSet = context.Set<T>();
     }
 
-    public IQueryable<T> Query(Expression<Func<T, bool>> where)
+    public IEnumerable<T> FindAll()
     {
-        try
-        {
-            return dbSet.Where(where);
-        }
-        catch (Exception)
-        {
-            throw;
-        }
+        return dbSet.Where(x => x.Active);
     }
 
-    public T Create(T user)
+    public T FindById(long id)
     {
-        dbSet.Add(user);
+        T entity = dbSet.Find(id);
+        return entity;
+    }
+
+    public T Create(T entity)
+    {
+        dbSet.Add(entity);
         context.SaveChanges();
-        return user;
+        return entity;
     }
 
-    public T GetById(long id)
+    public T Update(T entity)
     {
-        T? obj = dbSet.Find(id);
-        return obj;
-    }
-
-    public T Update(T user)
-    {
-        dbSet.Update(user);
+        dbSet.Update(entity);
         context.SaveChanges();
-        return user;
+        return entity;
     }
 
-    public void Delete(long id)
+    public void Delete(T entity)
     {
-        T? obj = dbSet.Find(id);
-        dbSet.Remove(obj);
+        dbSet.Remove(entity);
+        context.SaveChanges();
+    }
+
+    public void DeleteById(long id)
+    {
+        T entity = dbSet.Find(id);
+        dbSet.Remove(entity);
         context.SaveChanges();
     }
 }
