@@ -12,19 +12,33 @@ public class UserService : IService<User>
     {
         this.repository = repository;
     }
-    
+
     public List<User> FindAll()
     {
         List<User> users = repository.GetAll().ToList();
-        if(users.Count == 0)
+        if (users.Count == 0)
             throw new Exception("Nenhum dado encontrado.");
 
         return users;
     }
 
-    public User Add(User user) {
-
+    public User Add(User user)
+    {
         return repository.Create(user);
+    }
 
+    public User GetById(long id)
+    {
+        return repository.GetById(id);
+    }
+
+    public User Update(User user)
+    {
+        return repository.Update(user);
+    }
+
+    public void Delete(long id)
+    {
+        repository.Delete(id);
     }
 }
