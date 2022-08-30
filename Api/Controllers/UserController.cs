@@ -27,4 +27,17 @@ public class UserController : ControllerBase
         
         return Ok(users);
     }
+
+    /// <summary>
+    /// Adicionar usuário
+    /// </summary>
+    [HttpPost]
+    public IActionResult Post([FromServices] UserService service, [FromBody] User user){
+
+        User pessoa = new User();
+        pessoa = service.Add(user);
+        return Ok(pessoa);
+
+
+    }
 }

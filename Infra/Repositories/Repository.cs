@@ -24,4 +24,10 @@ public class Repository<T> where T : class
             throw;
         }
     }
+
+    public T Create(T user) {
+        dbSet.Add(user);
+        context.SaveChanges();
+        return user;
+    }
 }

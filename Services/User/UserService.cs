@@ -21,4 +21,10 @@ public class UserService : IService<User>
 
         return users;
     }
+
+    public User Add(User user) {
+
+        return repository.Create(user);
+
+    }
 }
