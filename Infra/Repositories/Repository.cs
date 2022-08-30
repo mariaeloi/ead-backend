@@ -24,7 +24,8 @@ public class Repository<T> : IRepository<T> where T : Entity
 
     public T FindById(long id)
     {
-        T entity = dbSet.Find(id);
+        T entity = dbSet.Where(x => (x.Active && (x.Id == id))).FirstOrDefault();
+        // T entity = dbSet.Find(id);
         return entity;
     }
 
@@ -44,14 +45,15 @@ public class Repository<T> : IRepository<T> where T : Entity
 
     public void Delete(T entity)
     {
-        dbSet.Remove(entity);
+        entity.Active = false;
+        dbSet.Update(entity);
+        // dbSet.Remove(entity);
         context.SaveChanges();
     }
 
     public void DeleteById(long id)
     {
         T entity = dbSet.Find(id);
-        dbSet.Remove(entity);
-        context.SaveChanges();
+        this.Delete(entity);
     }
 }
