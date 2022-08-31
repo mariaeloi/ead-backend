@@ -1,6 +1,7 @@
 using System.Reflection;
 using Infra.Contexts;
 using Infra.Repositories;
+using Infra.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Services;
@@ -42,8 +43,8 @@ public class Startup
             options.IncludeXmlComments(xmlPath);
         });
 
+        services.AddTransient<IUnitOfWork, UnitOfWork>();
         services.AddTransient<UserService>();
-        services.AddTransient<UserRepository>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
