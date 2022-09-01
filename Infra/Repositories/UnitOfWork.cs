@@ -8,6 +8,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
 {
     private readonly AppDbContext _context = null;
     private Repository<User> _userRepository = null;
+    private Repository<Course> _courseRepository = null;
 
     public UnitOfWork(AppDbContext context)
     {
@@ -23,6 +24,18 @@ public class UnitOfWork : IUnitOfWork, IDisposable
                 _userRepository = new Repository<User>(_context);
             }
             return _userRepository;
+        }
+    }
+
+    public IRepository<Course> CourseRepository
+    {
+        get
+        {
+            if (_courseRepository == null)
+            {
+                _courseRepository = new Repository<Course>(_context);
+            }
+            return _courseRepository;
         }
     }
 

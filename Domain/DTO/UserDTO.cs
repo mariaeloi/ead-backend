@@ -1,7 +1,6 @@
 namespace Domain.DTO;
 
-public class UserDTO {
-
+public class UserDTO 
+{
     
-
 }
