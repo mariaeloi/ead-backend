@@ -30,4 +30,14 @@ public class CourseController : ControllerBase
 
         return Ok(courses);
     }
+
+    /// <summary>
+    /// Adicionar Curso
+    /// </summary>
+    [HttpPost]
+    public IActionResult Post([FromServices] CourseService service, [FromBody] Course curso)
+    {
+        curso = service.Add(curso);
+        return Ok(curso);
+    }
 }
