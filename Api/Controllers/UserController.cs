@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 
@@ -10,12 +11,14 @@ namespace Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("users")]
+[Authorize]
 public class UserController : ControllerBase
 {
     /// <summary>
     /// Buscar todos os usuários
     /// </summary>
     [HttpGet]
+    [Authorize(Roles = "Principal")]
     public IActionResult GetAll([FromServices] UserService service)
     {
         List<User> users = new List<User>();
@@ -35,13 +38,13 @@ public class UserController : ControllerBase
     /// Adicionar usuário
     /// </summary>
     [HttpPost]
+    [AllowAnonymous]
     public IActionResult Post([FromServices] UserService service, [FromBody] User user)
     {
         User pessoa = new User();
         pessoa = service.Add(user);
         return Ok(pessoa);
     }
-
 
     /// <summary>
     /// Buscar usuário
@@ -65,14 +68,12 @@ public class UserController : ControllerBase
         return Ok(user);
     }
 
-
     /// <summary>
     /// Remover usuário
     /// </summary>
     [HttpDelete("{id}")]
     public IActionResult Delete([FromServices] UserService service, long id)
     {
-        // user.Id = id;
         service.Delete(id);
         return Ok();
     }

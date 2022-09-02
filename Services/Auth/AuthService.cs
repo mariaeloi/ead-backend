@@ -26,7 +26,7 @@ public class AuthService
         if(!Crypter.CheckPassword(user.Password, userExist.Password))
             throw new BadCredentialsException();
 
-        var token = _tokenService.GenerateToken(user);
+        var token = _tokenService.GenerateToken(userExist);
         return new {
             user = userExist,
             token = token
