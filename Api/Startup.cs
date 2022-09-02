@@ -1,10 +1,14 @@
 using System.Reflection;
+using System.Text;
 using Infra.Contexts;
 using Infra.Repositories;
 using Infra.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Services;
+using Services.Interfaces;
 
 namespace Api;
 
@@ -42,8 +46,31 @@ public class Startup
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             options.IncludeXmlComments(xmlPath);
         });
+ 
+        // Configure the authentication and set default scheme
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+            .AddJwtBearer(options => {
+               options.RequireHttpsMetadata = false;
+               options.SaveToken = true;
+
+               var key = Encoding.ASCII.GetBytes(TokenSettings.Secret);
+               options.TokenValidationParameters = new TokenValidationParameters
+               {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key), // Key that will be used for validation
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+               }; // Parameters used for token validation
+            });
 
         services.AddTransient<IUnitOfWork, UnitOfWork>();
+        services.AddTransient<ITokenService, TokenService>();
+        services.AddTransient<AuthService>();
+        
         services.AddTransient<UserService>();
         services.AddTransient<CourseService>();
     }
@@ -71,7 +98,7 @@ public class Startup
         // app.UseHttpsRedirection();
 
         app.UseRouting();
-
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>

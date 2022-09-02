@@ -31,7 +31,8 @@ public class Repository<T> : IRepository<T> where T : Entity
     public T FindOne(Expression<Func<T, bool>> predicate)
     {
         T entity = dbSet.FirstOrDefault(predicate);
-        context.Entry(entity).State = EntityState.Detached;
+        if(entity != null)
+            context.Entry(entity).State = EntityState.Detached;
         return entity;
     }
 
