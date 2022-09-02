@@ -1,3 +1,4 @@
+using CryptSharp;
 using Domain.Entities;
 using Infra.Repositories.Interfaces;
 using Services.Interfaces;
@@ -24,6 +25,7 @@ public class UserService : IService<User>
 
     public User Add(User user)
     {
+        user.Password = Crypter.MD5.Crypt(user.Password);
         return _uow.UserRepository.Create(user);
     }
 
@@ -34,6 +36,11 @@ public class UserService : IService<User>
 
     public User Update(User user)
     {
+        User userExist = _uow.UserRepository.FindById(user.Id);
+
+        if(!user.Password.Equals(userExist.Password))
+            user.Password = Crypter.MD5.Crypt(user.Password);
+
         return _uow.UserRepository.Update(user);
     }
 

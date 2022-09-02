@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Domain.Entities;
 using Infra.Contexts;
 using Infra.Repositories.Interfaces;
@@ -17,16 +18,26 @@ public class Repository<T> : IRepository<T> where T : Entity
         dbSet = context.Set<T>();
     }
 
+    public IEnumerable<T> FindAll(Expression<Func<T, bool>> predicate)
+    {
+        return dbSet.Where(predicate);
+    }
+
     public IEnumerable<T> FindAll()
     {
-        return dbSet.Where(x => x.Active);
+        return this.FindAll(x => x.Active);
+    }
+    
+    public T FindOne(Expression<Func<T, bool>> predicate)
+    {
+        T entity = dbSet.FirstOrDefault(predicate);
+        context.Entry(entity).State = EntityState.Detached;
+        return entity;
     }
 
     public T FindById(long id)
     {
-        T entity = dbSet.Where(x => (x.Active && (x.Id == id))).FirstOrDefault();
-        // T entity = dbSet.Find(id);
-        return entity;
+        return this.FindOne(x => (x.Active && (x.Id == id)));
     }
 
     public T Create(T entity)
@@ -46,8 +57,7 @@ public class Repository<T> : IRepository<T> where T : Entity
     public void Delete(T entity)
     {
         entity.Active = false;
-        dbSet.Update(entity);
-        // dbSet.Remove(entity);
+        // dbSet.Update(entity);
         context.SaveChanges();
     }
 
