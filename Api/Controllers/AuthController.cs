@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.Exceptions;
@@ -17,6 +18,7 @@ public class AuthController : ControllerBase
     /// Realizar login
     /// </summary>
     [HttpPost("login")]
+    [AllowAnonymous]
     public IActionResult Login([FromServices] AuthService service, [FromBody] User user)
     {
         try
