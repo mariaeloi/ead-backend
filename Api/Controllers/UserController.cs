@@ -2,6 +2,7 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services;
+using Services.Exceptions;
 
 namespace Api.Controllers;
 
@@ -63,9 +64,15 @@ public class UserController : ControllerBase
     [HttpPut("{id}")]
     public IActionResult Update([FromServices] UserService service, [FromBody] User user, long id)
     {
-        user.Id = id;
-        user = service.Update(user);
-        return Ok(user);
+        try
+        {
+            user.Id = id;
+            user = service.Update(user);
+            return Ok(user);
+        } catch (Exception e) when (e is AccessDeniedException)
+        {
+            return Unauthorized(new { message = e.Message });
+        }
     }
 
     /// <summary>

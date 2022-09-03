@@ -70,6 +70,8 @@ public class Startup
         services.AddTransient<IUnitOfWork, UnitOfWork>();
         services.AddTransient<ITokenService, TokenService>();
         services.AddTransient<AuthService>();
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddScoped<AuthData>();
         
         services.AddTransient<UserService>();
         services.AddTransient<CourseService>();
