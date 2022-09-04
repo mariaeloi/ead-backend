@@ -1,5 +1,7 @@
+using CryptSharp;
 using Domain.Entities;
 using Infra.Repositories.Interfaces;
+using Services.Exceptions;
 using Services.Interfaces;
 
 namespace Services;
@@ -8,9 +10,12 @@ public class UserService : IService<User>
 {
     private readonly IUnitOfWork _uow;
 
-    public UserService(IUnitOfWork uow)
+    private readonly AuthData _auth;
+
+    public UserService(IUnitOfWork uow, AuthData auth)
     {
         this._uow = uow;
+        this._auth = auth;
     }
 
     public List<User> FindAll()
@@ -24,6 +29,7 @@ public class UserService : IService<User>
 
     public User Add(User user)
     {
+        user.Password = Crypter.MD5.Crypt(user.Password);
         return _uow.UserRepository.Create(user);
     }
 
@@ -34,6 +40,13 @@ public class UserService : IService<User>
 
     public User Update(User user)
     {
+        User loggedInUser = _auth.LoggedInUser;
+        if(loggedInUser.Id != user.Id)
+            throw new AccessDeniedException("Você não tem permissão para atualizar este usuário");
+
+        if(!user.Password.Equals(loggedInUser.Password))
+            user.Password = Crypter.MD5.Crypt(user.Password);
+
         return _uow.UserRepository.Update(user);
     }
 
