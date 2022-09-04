@@ -73,6 +73,7 @@ public class Startup
         
         services.AddTransient<UserService>();
         services.AddTransient<CourseService>();
+        services.AddTransient<LessonService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

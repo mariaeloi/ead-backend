@@ -11,5 +11,8 @@ namespace Domain.Entities
         public string Link { get; set; }
         public string Description { get; set; }
         public int Order { get; set; }
+
+        public long CourseId { get; set; }
+        public Course Course { get; set; }
     }
 }
