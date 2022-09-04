@@ -11,6 +11,8 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new UserMap());
+        modelBuilder.ApplyConfiguration(new CourseMap());
+
         
         base.OnModelCreating(modelBuilder);
     }

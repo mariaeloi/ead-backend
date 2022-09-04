@@ -1,7 +1,14 @@
 using System.Reflection;
+using System.Text;
 using Infra.Contexts;
+using Infra.Repositories;
+using Infra.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Services;
+using Services.Interfaces;
 
 namespace Api;
 
@@ -39,6 +46,35 @@ public class Startup
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             options.IncludeXmlComments(xmlPath);
         });
+ 
+        // Configure the authentication and set default scheme
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+            .AddJwtBearer(options => {
+               options.RequireHttpsMetadata = false;
+               options.SaveToken = true;
+
+               var key = Encoding.ASCII.GetBytes(TokenSettings.Secret);
+               options.TokenValidationParameters = new TokenValidationParameters
+               {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key), // Key that will be used for validation
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+               }; // Parameters used for token validation
+            });
+
+        services.AddTransient<IUnitOfWork, UnitOfWork>();
+        services.AddTransient<ITokenService, TokenService>();
+        services.AddTransient<AuthService>();
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddScoped<AuthData>();
+        
+        services.AddTransient<UserService>();
+        services.AddTransient<CourseService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,10 +97,16 @@ public class Startup
             });
         }
 
-        // app.UseHttpsRedirection();
+        app.UseCors(x => x
+            .SetIsOriginAllowed(origin => true)
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+        );
+        app.UseHttpsRedirection();
 
         app.UseRouting();
-
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
