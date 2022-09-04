@@ -13,6 +13,6 @@ namespace Domain.Entities
         public int Order { get; set; }
 
         public long CourseId { get; set; }
-        public Course Course { get; set; }
+        public virtual Course Course { get; set; }
     }
 }

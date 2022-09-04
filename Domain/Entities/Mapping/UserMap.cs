@@ -63,5 +63,8 @@ public class UserMap : IEntityTypeConfiguration<User>
             .HasColumnType("varchar")
             .HasMaxLength(10)
             .IsRequired();
+
+        builder.HasMany(u => u.Courses)
+            .WithMany(u => u.Users);
     }
 }

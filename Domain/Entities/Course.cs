@@ -4,11 +4,14 @@ public class Course : Entity
 {
     public Course()
     {
-        Lessons = new List<Lesson>();
+        this.Lessons = new HashSet<Lesson>();
+        this.Users = new HashSet<User>();
     }
     public string Title { get; set; }
     public string Description { get; set; }
-    public User Owner { get; set; }
-    public virtual ICollection<Lesson> Lessons { get; set; }  
-    //public List<User> Students { get; set; }
+    //public long OwnerId { get; set; }
+   
+    public virtual ICollection<Lesson> Lessons { get; set; }
+    public virtual ICollection<User> Users { get; set; }
+    //public virtual User User { get; set; }
 }

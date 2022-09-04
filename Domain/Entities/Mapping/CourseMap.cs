@@ -45,14 +45,8 @@ public class CourseMap : IEntityTypeConfiguration<Course>
             .HasMaxLength(150)
             .IsRequired();
 
-        //builder.HasMany(c => c.Lessons).WithOne();
-        //builder.HasMany(c => c.Students).WithOne();
-        // .Property(x => x.Lessons)
-        //     .HasMa
-        //     .HasColumnType("varchar")
-        //     .HasMaxLength(15)
-        //     .IsRequired();
-        // builder.HasIndex(u => u.Username).IsUnique();
-
+        builder.HasMany(u => u.Users)
+            .WithMany(u => u.Courses)
+            .UsingEntity(j => j.ToTable("CousersUsers"));
     }
 }
