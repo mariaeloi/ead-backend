@@ -6,14 +6,14 @@ namespace Api.Controllers;
 
 /// <inheritdoc />
 /// <summary>
-/// User Controller
+/// Course Controller
 /// </summary>
 [ApiController]
 [Route("courses")]
 public class CourseController : ControllerBase
 {
     /// <summary>
-    /// Buscar todos os usuários
+    /// Buscar todos os cursos
     /// </summary>
     [HttpGet]
     public IActionResult GetAll([FromServices] CourseService service)
