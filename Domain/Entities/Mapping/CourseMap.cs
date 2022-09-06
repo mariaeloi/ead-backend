@@ -19,7 +19,7 @@ public class CourseMap : IEntityTypeConfiguration<Course>
         builder.Property(u => u.CreatedOn)
             .HasColumnName("created_on")
             .HasColumnType("timestamp")
-            // .HasDefaultValue(DateTime.Now)
+            .HasDefaultValue(DateTime.Now)
             .IsRequired();
 
         builder.Property(u => u.UpdatedOn)
@@ -29,7 +29,7 @@ public class CourseMap : IEntityTypeConfiguration<Course>
         builder.Property(u => u.Active)
             .HasColumnName("active")
             .HasColumnType("boolean")
-            // .HasDefaultValue(true)
+            .HasDefaultValue(true)
             .IsRequired();
 
         builder.Property(x => x.Title)
@@ -45,8 +45,12 @@ public class CourseMap : IEntityTypeConfiguration<Course>
             .HasMaxLength(150)
             .IsRequired();
 
-        builder.HasMany(u => u.Users)
+        builder.HasMany(u => u.Students)
             .WithMany(u => u.Courses)
-            .UsingEntity(j => j.ToTable("CousersUsers"));
+            .UsingEntity(j => j.ToTable("CousersStudents"));
+
+        builder.HasOne(u => u.Owner)
+            .WithMany()
+            .HasForeignKey(u => u.OwnerId);
     }
 }

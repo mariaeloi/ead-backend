@@ -19,7 +19,7 @@ public class UserMap : IEntityTypeConfiguration<User>
         builder.Property(u => u.CreatedOn)
             .HasColumnName("created_on")
             .HasColumnType("timestamp")
-            // .HasDefaultValue(DateTime.Now)
+            .HasDefaultValue(DateTime.Now)
             .IsRequired();
 
         builder.Property(u => u.UpdatedOn)
@@ -29,7 +29,7 @@ public class UserMap : IEntityTypeConfiguration<User>
         builder.Property(u => u.Active)
             .HasColumnName("active")
             .HasColumnType("boolean")
-            // .HasDefaultValue(true)
+            .HasDefaultValue(true)
             .IsRequired();
 
         builder.Property(x => x.Name)
@@ -65,6 +65,6 @@ public class UserMap : IEntityTypeConfiguration<User>
             .IsRequired();
 
         builder.HasMany(u => u.Courses)
-            .WithMany(u => u.Users);
+            .WithMany(u => u.Students);
     }
 }

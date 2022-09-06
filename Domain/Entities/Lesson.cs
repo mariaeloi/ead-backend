@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Domain.Entities
@@ -13,6 +14,7 @@ namespace Domain.Entities
         public int Order { get; set; }
 
         public long CourseId { get; set; }
+        [JsonIgnore]
         public virtual Course Course { get; set; }
     }
 }

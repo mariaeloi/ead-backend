@@ -19,7 +19,7 @@ public class LessonMap : IEntityTypeConfiguration<Lesson>
         builder.Property(u => u.CreatedOn)
             .HasColumnName("created_on")
             .HasColumnType("timestamp")
-            // .HasDefaultValue(DateTime.Now)
+            .HasDefaultValue(DateTime.Now)
             .IsRequired();
 
         builder.Property(u => u.UpdatedOn)
@@ -29,7 +29,7 @@ public class LessonMap : IEntityTypeConfiguration<Lesson>
         builder.Property(u => u.Active)
             .HasColumnName("active")
             .HasColumnType("boolean")
-            // .HasDefaultValue(true)
+            .HasDefaultValue(true)
             .IsRequired();
 
         builder.Property(x => x.Title)
@@ -49,7 +49,6 @@ public class LessonMap : IEntityTypeConfiguration<Lesson>
             .HasColumnName("description")
             .HasColumnType("varchar")
             .HasMaxLength(150);
-            //.IsRequired();
 
         builder.Property(x => x.Order)
             .HasColumnName("order")
@@ -60,16 +59,5 @@ public class LessonMap : IEntityTypeConfiguration<Lesson>
             .WithMany(l => l.Lessons)
             .HasForeignKey(d => d.CourseId)
             .HasConstraintName("FK_Lesson_Course_CourseID");
-
-
-        //builder.HasMany(c => c.Lessons).WithOne();
-        //builder.HasMany(c => c.Students).WithOne();
-        // .Property(x => x.Lessons)
-        //     .HasMa
-        //     .HasColumnType("varchar")
-        //     .HasMaxLength(15)
-        //     .IsRequired();
-        // builder.HasIndex(u => u.Username).IsUnique();
-
     }
 }
