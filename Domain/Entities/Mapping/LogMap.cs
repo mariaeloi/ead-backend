@@ -19,7 +19,6 @@ public class LogMap : IEntityTypeConfiguration<Log>
         builder.Property(l => l.Date)
             .HasColumnName("date")
             .HasColumnType("timestamp")
-            .HasDefaultValue(DateTime.Now)
             .IsRequired();
 
         builder.Property(l => l.Action)
@@ -28,18 +27,20 @@ public class LogMap : IEntityTypeConfiguration<Log>
             .HasMaxLength(15)
             .IsRequired();
 
-        builder.Property(l => l.EntityType)
-            .HasColumnName("action")
+        builder.Property(l => l.EntityName)
+            .HasColumnName("entity_name")
             .HasColumnType("varchar")
             .HasMaxLength(10)
             .IsRequired();
         
         builder.HasOne(l => l.User)
             .WithMany()
-            .HasForeignKey(l => l.UserId);
+            .HasForeignKey(l => l.UserId)
+            .IsRequired();
         
-        builder.HasOne(l => l.Entity)
-            .WithMany()
-            .HasForeignKey(l => l.EntityId);
+        builder.Property(l => l.EntityId)
+            .HasColumnName("entity_id")
+            .HasColumnType("bigint")
+            .IsRequired();
     }
 }
