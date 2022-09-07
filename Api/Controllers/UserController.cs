@@ -22,17 +22,15 @@ public class UserController : ControllerBase
     [Authorize(Roles = "Principal")]
     public IActionResult GetAll([FromServices] UserService service)
     {
-        List<User> users = new List<User>();
         try
         {
-            users = service.FindAll();
+            List<User> users = service.FindAll();
+            return Ok(users);
         }
-        catch (Exception e)
+        catch (NotFoundException e)
         {
-            return NotFound(e.Message);
+            return NotFound(new { message = e.Message });
         }
-
-        return Ok(users);
     }
 
     /// <summary>
@@ -42,9 +40,15 @@ public class UserController : ControllerBase
     [AllowAnonymous]
     public IActionResult Post([FromServices] UserService service, [FromBody] User user)
     {
-        User pessoa = new User();
-        pessoa = service.Add(user);
-        return Ok(pessoa);
+        try 
+        {
+            User pessoa = service.Add(user);
+            return Ok(pessoa);
+        }
+        catch (ValidationException e)
+        {
+            return BadRequest(e.Errors);
+        }
     }
 
     /// <summary>
@@ -53,8 +57,15 @@ public class UserController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult GetById([FromServices] UserService service, long id)
     {
-        User user = service.GetById(id);
-        return Ok(user);
+        try
+        {
+            User user = service.GetById(id);
+            return Ok(user);
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(new { message = e.Message });
+        }
     }
 
 
@@ -69,7 +80,12 @@ public class UserController : ControllerBase
             user.Id = id;
             user = service.Update(user);
             return Ok(user);
-        } catch (Exception e) when (e is AccessDeniedException)
+        }
+        catch (ValidationException e)
+        {
+            return BadRequest(e.Errors);
+        }
+        catch (AccessDeniedException e)
         {
             return Unauthorized(new { message = e.Message });
         }
@@ -81,7 +97,14 @@ public class UserController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete([FromServices] UserService service, long id)
     {
-        service.Delete(id);
-        return Ok();
+        try
+        {
+            service.Delete(id);
+            return NoContent();
+        }
+        catch (AccessDeniedException e)
+        {
+            return Unauthorized(new { message = e.Message });
+        }
     }
 }
