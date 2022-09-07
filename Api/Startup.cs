@@ -1,7 +1,5 @@
 using System.Reflection;
 using System.Text;
-using Domain.Entities;
-using FluentValidation;
 using Infra.Contexts;
 using Infra.Repositories;
 using Infra.Repositories.Interfaces;
@@ -77,8 +75,6 @@ public class Startup
         
         services.AddTransient<UserService>();
         services.AddTransient<CourseService>();
-
-        services.AddScoped<IValidator<User>, UserValidator>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
