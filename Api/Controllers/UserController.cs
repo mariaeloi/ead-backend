@@ -42,8 +42,8 @@ public class UserController : ControllerBase
     {
         try 
         {
-            User pessoa = service.Add(user);
-            return Ok(pessoa);
+            User userResult = service.Add(user);
+            return Ok(userResult);
         }
         catch (ValidationException e)
         {
