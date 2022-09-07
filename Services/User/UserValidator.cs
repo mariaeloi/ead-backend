@@ -8,21 +8,19 @@ public class UserValidator : AbstractValidator<User>
     public UserValidator()
     {
         RuleFor(u => u.Name)
-            .NotEmpty();
+            .NotEmpty().WithMessage("Nome deve ser informado");
 
         RuleFor(u => u.Email)
-            .NotEmpty()
-            .EmailAddress();
+            .NotEmpty().WithMessage("E-mail deve ser informado")
+            .EmailAddress().WithMessage("Formato de e-mail inválido");
 
         RuleFor(u => u.Username)
-            .NotEmpty()
-            .MinimumLength(2);
+            .NotEmpty().WithMessage("Nome de usuário deve ser informado")
+            .MinimumLength(2).WithMessage("Nome de usuário deve ser maior ou igual a 2 caracteres")
+            .Matches("^[a-zA-Z0-9._]+$").WithMessage("Formato de nome de usuário inválido");
 
         RuleFor(u => u.Password)
-            .NotNull()
-            .MinimumLength(4);
-
-        RuleFor(u => u.Role)
-            .NotNull();
+            .NotNull().WithMessage("Senha deve ser informada")
+            .MinimumLength(4).WithMessage("Senha deve ser maior ou igual a 4 caracteres");
     }
 }
