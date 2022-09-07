@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Domain.Entities.Mapping;
 
-public class UserMap : IEntityTypeConfiguration<User>
+public class LessonMap : IEntityTypeConfiguration<Lesson>
 {
-    public void Configure(EntityTypeBuilder<User> builder)
+    public void Configure(EntityTypeBuilder<Lesson> builder)
     {
-        builder.ToTable("users");
+        builder.ToTable("lessons");
 
         builder.HasKey(u => u.Id);
 
@@ -32,39 +32,32 @@ public class UserMap : IEntityTypeConfiguration<User>
             .HasDefaultValue(true)
             .IsRequired();
 
-        builder.Property(x => x.Name)
-            .HasColumnName("name")
+        builder.Property(x => x.Title)
+            .HasColumnName("title")
             .HasColumnType("varchar")
             .HasMaxLength(50)
-            .IsRequired();
+            .IsRequired();    
 
-        builder.Property(x => x.Email)
-            .HasColumnName("email")
+        builder.Property(x => x.Link)
+            .HasColumnName("link")
             .HasColumnType("varchar")
-            .HasMaxLength(50)
+            .HasMaxLength(100)
             .IsRequired();
-        builder.HasIndex(u => u.Email).IsUnique();
+        builder.HasIndex(u => u.Link).IsUnique();
 
-        builder.Property(x => x.Username)
-            .HasColumnName("username")
+        builder.Property(x => x.Description)
+            .HasColumnName("description")
             .HasColumnType("varchar")
-            .HasMaxLength(15)
-            .IsRequired();
-        builder.HasIndex(u => u.Username).IsUnique();
+            .HasMaxLength(150);
 
-        builder.Property(x => x.Password)
-            .HasColumnName("password")
-            .HasColumnType("varchar")
-            .HasMaxLength(50)
+        builder.Property(x => x.Order)
+            .HasColumnName("order")
+            .HasColumnType("int")
             .IsRequired();
 
-        builder.Property(x => x.Role)
-            .HasColumnName("role")
-            .HasColumnType("varchar")
-            .HasMaxLength(10)
-            .IsRequired();
-
-        builder.HasMany(u => u.Courses)
-            .WithMany(u => u.Students);
+        builder.HasOne(c => c.Course)
+            .WithMany(l => l.Lessons)
+            .HasForeignKey(d => d.CourseId)
+            .HasConstraintName("FK_Lesson_Course_CourseID");
     }
 }

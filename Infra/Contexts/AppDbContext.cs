@@ -12,8 +12,8 @@ public class AppDbContext : DbContext
     {
         modelBuilder.ApplyConfiguration(new UserMap());
         modelBuilder.ApplyConfiguration(new CourseMap());
+        modelBuilder.ApplyConfiguration(new LessonMap());
 
-        
         base.OnModelCreating(modelBuilder);
     }
 }

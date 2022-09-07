@@ -77,6 +77,7 @@ public class Startup
         
         services.AddTransient<UserService>();
         services.AddTransient<CourseService>();
+        services.AddTransient<LessonService>();
 
         services.AddScoped<IValidator<User>, UserValidator>();
     }
