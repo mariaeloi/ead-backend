@@ -12,8 +12,8 @@ public class AuthData
     {
         this._accessor = accessor;
 
-        this.LoggedInUser =  (this.Username is null) ? new User()
-            : uow.UserRepository.FindOne(u => u.Active && u.Username.ToLower().Equals(this.Username.ToLower()));
+        this.LoggedInUser =  (this.Username is null) ? new User() 
+            : uow.UserRepository.FindOne(u => u.Active && u.Username == this.Username);
     }
 
     public string? Username
