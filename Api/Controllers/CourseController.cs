@@ -1,6 +1,7 @@
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Services;
+using Services.Exceptions;
 
 namespace Api.Controllers;
 
@@ -39,5 +40,22 @@ public class CourseController : ControllerBase
     {
         curso = service.Add(curso);
         return Ok(curso);
+    }
+
+    /// <summary>
+    /// Buscar curso por ID
+    /// </summary>
+    [HttpGet("{id}")]
+    public IActionResult GetById([FromServices] CourseService service, long id)
+    {
+        try
+        {
+            Course course = service.GetById(id);
+            return Ok(course);
+        }
+        catch (Exception e)
+        {
+            return NotFound(e.Message);
+        }
     }
 }

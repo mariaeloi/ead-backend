@@ -17,7 +17,7 @@ public class CourseService : IService<Course>
     {
         List<Course> courses = _uow.CourseRepository.FindAll().ToList();
         if (courses.Count == 0)
-            throw new Exception("Nenhum dado encontrado.");
+            throw new Exception("Nenhum curso encontrado.");
 
         return courses;
     }
@@ -29,6 +29,10 @@ public class CourseService : IService<Course>
 
     public Course GetById(long id)
     {
+        Course course = _uow.CourseRepository.FindById(id);
+        if (course == null)
+            throw new Exception("Não existe Curso com este ID.");
+
         return _uow.CourseRepository.FindById(id);
     }
 
