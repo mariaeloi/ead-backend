@@ -84,4 +84,21 @@ public class CourseController : ControllerBase
             return Unauthorized(new { message = e.Message });
         }
     }
+
+    /// <summary>
+    /// Remover curso
+    /// </summary>
+    [HttpDelete("{id}")]
+    public IActionResult Delete([FromServices] CourseService service, long id)
+    {
+        try
+        {
+            service.Delete(id);
+            return NoContent();
+        }
+        catch (AccessDeniedException e)
+        {
+            return Unauthorized(new { message = e.Message });
+        }
+    }
 }
