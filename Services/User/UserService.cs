@@ -47,7 +47,7 @@ public class UserService : IService<User>
     public User Update(User user)
     {
         User loggedInUser = _auth.LoggedInUser;
-        if (loggedInUser.Id != user.Id)
+        if (loggedInUser.Id != user.Id && loggedInUser.Role != 0)
             throw new AccessDeniedException("Você não tem permissão para atualizar este usuário");
 
         this.Validate(user);
@@ -63,7 +63,7 @@ public class UserService : IService<User>
     public void Delete(long id)
     {
         User loggedInUser = _auth.LoggedInUser;
-        if (loggedInUser.Id != id)
+        if (loggedInUser.Id != id && loggedInUser.Role != 0)
             throw new AccessDeniedException("Você não tem permissão para remover este usuário");
 
         _uow.UserRepository.DeleteById(id);
@@ -86,7 +86,7 @@ public class UserService : IService<User>
                 errors.Add("Email", new string[] { "Este e-mail encontra-se em uso" });
         }
 
-        if(errors.Count > 0)
+        if (errors.Count > 0)
             throw new ValidationException(errors);
     }
 }
