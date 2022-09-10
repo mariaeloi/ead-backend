@@ -66,4 +66,22 @@ public class CourseController : ControllerBase
             return NotFound(e.Message);
         }
     }
+
+    /// <summary>
+    /// Atualizar curso
+    /// </summary>
+    [HttpPut("{id}")]
+    public IActionResult Update([FromServices] CourseService service, [FromBody] Course course, long id)
+    {
+        try
+        {
+            course.Id = id;
+            course = service.Update(course);
+            return Ok(course);
+        }
+        catch (AccessDeniedException e)
+        {
+            return Unauthorized(new { message = e.Message });
+        }
+    }
 }

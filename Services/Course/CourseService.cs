@@ -27,7 +27,7 @@ public class CourseService : IService<Course>
 
     public Course Add(Course course)
     {
-        if ((int)_auth.LoggedInUser.Role != 1)
+        if ((int)_auth.LoggedInUser.Role != 1) //Verifica o cargo do usuário logado. Se não for professor, não pode criar curso.
             throw new AccessDeniedException("Somente Professores podem criar cursos!");
         
         return _uow.CourseRepository.Create(course);
@@ -44,6 +44,13 @@ public class CourseService : IService<Course>
 
     public Course Update(Course course)
     {
+        Course courseFull = GetById(course.Id);
+        if (_auth.LoggedInUser.Id != courseFull.OwnerId)
+            throw new AccessDeniedException("Você não pode editar um curso que não é proprietário.");
+
+        course.UpdatedOn = DateTime.Now;
+        course.OwnerId = courseFull.OwnerId; 
+        course.CreatedOn = courseFull.CreatedOn;  
         return _uow.CourseRepository.Update(course);
     }
 
