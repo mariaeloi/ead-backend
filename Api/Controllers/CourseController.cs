@@ -38,8 +38,16 @@ public class CourseController : ControllerBase
     [HttpPost]
     public IActionResult Post([FromServices] CourseService service, [FromBody] Course curso)
     {
-        curso = service.Add(curso);
-        return Ok(curso);
+        try
+        {
+            curso = service.Add(curso);
+            return Ok(curso);
+        }
+        catch (AccessDeniedException e)
+        {
+            return Unauthorized(new { message = e.Message });
+        }
+        
     }
 
     /// <summary>
