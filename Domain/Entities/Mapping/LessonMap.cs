@@ -43,7 +43,7 @@ public class LessonMap : IEntityTypeConfiguration<Lesson>
             .HasColumnType("varchar")
             .HasMaxLength(100)
             .IsRequired();
-        builder.HasIndex(u => u.Link).IsUnique();
+        //builder.HasIndex(u => u.Link).IsUnique();
 
         builder.Property(x => x.Description)
             .HasColumnName("description")
