@@ -41,7 +41,9 @@ public class CourseService : IService<Course>
         if (course == null)
             throw new Exception("Não existe Curso com este ID.");
 
-        return _uow.CourseRepository.FindById(id);
+        //Busca as lições ativas do respectivo curso.
+        course.Lessons = _uow.LessonRepository.FindAll(l => (l.Active && (l.CourseId == course.Id))).ToList();
+        return course;
     }
 
     public Course Update(Course course)
