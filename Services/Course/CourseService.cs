@@ -23,6 +23,10 @@ public class CourseService : IService<Course>
         if (courses.Count == 0)
             throw new Exception("Nenhum curso encontrado.");
 
+        foreach (var course in courses)
+        {
+            course.Lessons = _uow.LessonRepository.FindAll(l => (l.Active && (l.CourseId == course.Id))).ToList();
+        }
         return courses;
     }
 
