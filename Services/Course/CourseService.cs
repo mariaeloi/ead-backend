@@ -2,6 +2,7 @@ using Domain.Entities;
 using Infra.Repositories.Interfaces;
 using Services.Exceptions;
 using Services.Interfaces;
+using Domain.Enum;
 
 namespace Services;
 
@@ -27,9 +28,10 @@ public class CourseService : IService<Course>
 
     public Course Add(Course course)
     {
-        if ((int)_auth.LoggedInUser.Role != 1) //Verifica o cargo do usuário logado. Se não for professor, não pode criar curso.
+        if (_auth.LoggedInUser.Role != UserRole.Teacher) //Verifica o cargo do usuário logado. Se não for professor, não pode criar curso.
             throw new AccessDeniedException("Somente Professores podem criar cursos!");
         
+        course.OwnerId = _auth.LoggedInUser.Id;
         return _uow.CourseRepository.Create(course);
     }
 
