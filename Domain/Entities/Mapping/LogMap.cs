@@ -35,8 +35,7 @@ public class LogMap : IEntityTypeConfiguration<Log>
         
         builder.HasOne(l => l.User)
             .WithMany()
-            .HasForeignKey(l => l.UserId)
-            .IsRequired();
+            .HasForeignKey(l => l.UserId);
         
         builder.Property(l => l.EntityId)
             .HasColumnName("entity_id")

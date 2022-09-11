@@ -106,5 +106,9 @@ public class UserController : ControllerBase
         {
             return Unauthorized(new { message = e.Message });
         }
+        catch (NotFoundException e)
+        {
+            return NotFound(new { message = e.Message });
+        }
     }
 }

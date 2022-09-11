@@ -58,7 +58,7 @@ public class Repository<T> : IRepository<T> where T : Entity
     public void Delete(T entity)
     {
         entity.Active = false;
-        // dbSet.Update(entity);
+        dbSet.Update(entity);
         context.SaveChanges();
     }
 
@@ -66,5 +66,11 @@ public class Repository<T> : IRepository<T> where T : Entity
     {
         T entity = dbSet.Find(id);
         this.Delete(entity);
+    }
+
+    public T FindOneTracked(Expression<Func<T, bool>> predicate)
+    {
+        T entity = dbSet.FirstOrDefault(predicate);
+        return entity;
     }
 }

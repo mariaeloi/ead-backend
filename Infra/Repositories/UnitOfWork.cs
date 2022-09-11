@@ -10,6 +10,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     private Repository<User> _userRepository = null;
     private Repository<Course> _courseRepository = null;
     private Repository<Lesson> _lessonRepository = null;
+    private ILogRepository _logRepository = null;
 
     public UnitOfWork(AppDbContext context)
     {
@@ -49,6 +50,18 @@ public class UnitOfWork : IUnitOfWork, IDisposable
                 _lessonRepository = new Repository<Lesson>(_context);
             }
             return _lessonRepository;
+        }
+    }
+
+    public ILogRepository LogRepository
+    {
+        get
+        {
+            if (_logRepository == null)
+            {
+                _logRepository = new LogRepository(_context);
+            }
+            return _logRepository;
         }
     }
 

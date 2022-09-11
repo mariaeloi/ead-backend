@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Services;
 using Services.Interfaces;
+using Services.Logger;
 
 namespace Api;
 
@@ -74,7 +75,8 @@ public class Startup
         services.AddTransient<AuthService>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddScoped<AuthData>();
-        
+
+        services.AddTransient<ILogService, LogService>();        
         services.AddTransient<UserService>();
         services.AddTransient<CourseService>();
         services.AddTransient<LessonService>();
