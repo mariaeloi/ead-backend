@@ -19,7 +19,7 @@ public class AuthService
 
     public dynamic Authenticate(User user)
     {
-        User userExist = _uow.UserRepository.FindOne(u => u.Active && u.Username == user.Username);
+        User userExist = _uow.UserRepository.FindOne(u => u.Active && u.Username.ToLower().Equals(user.Username.ToLower()));
         if(userExist == null)
             throw new NotFoundException();
 
