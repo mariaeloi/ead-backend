@@ -33,6 +33,20 @@ public class UserService : IService<User>
         return users;
     }
 
+    public List<User> FindAll(bool? active)
+    {
+        List<User> users = new List<User>();
+        if (active == null)
+            users = _uow.UserRepository.FindAll(u => true).ToList();
+        else
+            users = _uow.UserRepository.FindAll(u => u.Active == active).ToList();
+
+        if (users.Count == 0)
+            throw new NotFoundException("Nenhum dado encontrado");
+
+        return users;
+    }
+
     public User Add(User user)
     {
         this.Validate(user);

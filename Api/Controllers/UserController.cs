@@ -20,11 +20,11 @@ public class UserController : ControllerBase
     /// </summary>
     [HttpGet]
     [Authorize(Roles = "Principal")]
-    public IActionResult GetAll([FromServices] UserService service)
+    public IActionResult GetAll([FromServices] UserService service, [FromQuery] bool? active)
     {
         try
         {
-            List<User> users = service.FindAll();
+            List<User> users = service.FindAll(active);
             return Ok(users);
         }
         catch (NotFoundException e)
