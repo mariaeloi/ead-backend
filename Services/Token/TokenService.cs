@@ -22,7 +22,7 @@ public class TokenService : ITokenService
             ), // Credenciais usadas para encriptar e decriptar o token
             Subject = new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.Name, user.Username), // ClaimTypes.Name mapeia para User.Identity.Name
+                new Claim(ClaimTypes.Name, user.Id.ToString()), // ClaimTypes.Name mapeia para User.Identity.Name
                 new Claim(ClaimTypes.Role, user.Role.ToString()) // ClaimTypes.Role mapeia para User.IsInRole
             }) // Perfis do usuário
         };

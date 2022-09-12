@@ -3,6 +3,7 @@ using System;
 using Infra.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infra.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220907002759_LogFix")]
+    partial class LogFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,11 +49,15 @@ namespace Infra.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<bool>("Active")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
+                        .HasDefaultValue(true)
                         .HasColumnName("active");
 
                     b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
+                        .HasDefaultValue(new DateTime(2022, 9, 6, 21, 27, 59, 414, DateTimeKind.Local).AddTicks(6095))
                         .HasColumnName("created_on");
 
                     b.Property<string>("Description")
@@ -93,14 +99,18 @@ namespace Infra.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<bool>("Active")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
+                        .HasDefaultValue(true)
                         .HasColumnName("active");
 
                     b.Property<long>("CourseId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
+                        .HasDefaultValue(new DateTime(2022, 9, 6, 21, 27, 59, 418, DateTimeKind.Local).AddTicks(6623))
                         .HasColumnName("created_on");
 
                     b.Property<string>("Description")
@@ -154,7 +164,9 @@ namespace Infra.Migrations
                         .HasColumnName("action");
 
                     b.Property<DateTime>("Date")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
+                        .HasDefaultValue(new DateTime(2022, 9, 6, 21, 27, 59, 427, DateTimeKind.Local).AddTicks(9306))
                         .HasColumnName("date");
 
                     b.Property<long>("EntityId")
@@ -167,7 +179,7 @@ namespace Infra.Migrations
                         .HasColumnType("varchar")
                         .HasColumnName("entity_name");
 
-                    b.Property<long?>("UserId")
+                    b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -187,11 +199,15 @@ namespace Infra.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<bool>("Active")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
+                        .HasDefaultValue(true)
                         .HasColumnName("active");
 
                     b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
+                        .HasDefaultValue(new DateTime(2022, 9, 6, 21, 27, 59, 408, DateTimeKind.Local).AddTicks(9975))
                         .HasColumnName("created_on");
 
                     b.Property<string>("Email")
@@ -281,7 +297,9 @@ namespace Infra.Migrations
                 {
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

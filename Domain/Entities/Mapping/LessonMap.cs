@@ -19,7 +19,6 @@ public class LessonMap : IEntityTypeConfiguration<Lesson>
         builder.Property(u => u.CreatedOn)
             .HasColumnName("created_on")
             .HasColumnType("timestamp")
-            .HasDefaultValue(DateTime.Now)
             .IsRequired();
 
         builder.Property(u => u.UpdatedOn)
@@ -29,7 +28,6 @@ public class LessonMap : IEntityTypeConfiguration<Lesson>
         builder.Property(u => u.Active)
             .HasColumnName("active")
             .HasColumnType("boolean")
-            .HasDefaultValue(true)
             .IsRequired();
 
         builder.Property(x => x.Title)
