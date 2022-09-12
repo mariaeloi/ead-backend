@@ -1,5 +1,7 @@
 using CryptSharp;
+using Domain.Constants;
 using Domain.Entities;
+using Domain.Enum;
 using Infra.Repositories.Interfaces;
 using Services.Exceptions;
 using Services.Interfaces;
@@ -8,15 +10,18 @@ namespace Services;
 
 public class UserService : IService<User>
 {
+    private const string ENTITY_NAME = EntityNameConstant.User;
     private readonly IUnitOfWork _uow;
     private readonly AuthData _auth;
     private readonly FluentValidation.IValidator<User> _validator;
+    private readonly ILogService _logger;
 
-    public UserService(IUnitOfWork uow, AuthData auth, FluentValidation.IValidator<User> validator)
+    public UserService(IUnitOfWork uow, AuthData auth, FluentValidation.IValidator<User> validator, ILogService logger)
     {
         this._uow = uow;
         this._auth = auth;
         this._validator = validator;
+        this._logger = logger;
     }
 
     public List<User> FindAll()
@@ -28,11 +33,27 @@ public class UserService : IService<User>
         return users;
     }
 
+    public List<User> FindAll(bool? active)
+    {
+        List<User> users = new List<User>();
+        if (active == null)
+            users = _uow.UserRepository.FindAll(u => true).ToList();
+        else
+            users = _uow.UserRepository.FindAll(u => u.Active == active).ToList();
+
+        if (users.Count == 0)
+            throw new NotFoundException("Nenhum dado encontrado");
+
+        return users;
+    }
+
     public User Add(User user)
     {
         this.Validate(user);
         user.Password = Crypter.MD5.Crypt(user.Password);
-        return _uow.UserRepository.Create(user);
+        User savedUser = _uow.UserRepository.Create(user);
+        _logger.Log(ActionConstant.Create, ENTITY_NAME, savedUser.Id);
+        return savedUser;
     }
 
     public User GetById(long id)
@@ -46,7 +67,7 @@ public class UserService : IService<User>
 
     public User Update(User user)
     {
-        User loggedInUser = _auth.LoggedInUser;
+        User loggedInUser = this.GetLoggedInUser();
         if (loggedInUser.Id != user.Id)
             throw new AccessDeniedException("Você não tem permissão para atualizar este usuário");
 
@@ -57,16 +78,22 @@ public class UserService : IService<User>
         user.CreatedOn = loggedInUser.CreatedOn;
         user.UpdatedOn = DateTime.Now;
 
-        return _uow.UserRepository.Update(user);
+        User savedUser = _uow.UserRepository.Update(user);
+        _logger.Log(ActionConstant.Update, ENTITY_NAME, savedUser.Id);
+        return savedUser;
     }
 
     public void Delete(long id)
     {
-        User loggedInUser = _auth.LoggedInUser;
-        if (loggedInUser.Id != id)
+        if (_uow.UserRepository.FindById(id) == null)
+            throw new NotFoundException("Usuário não encontrado");
+
+        User loggedInUser = this.GetLoggedInUser();
+        if (loggedInUser.Id != id && loggedInUser.Role != UserRole.Principal)
             throw new AccessDeniedException("Você não tem permissão para remover este usuário");
 
         _uow.UserRepository.DeleteById(id);
+        _logger.Log(ActionConstant.Delete, ENTITY_NAME, id);
     }
 
     public void Validate(User user)
@@ -86,7 +113,15 @@ public class UserService : IService<User>
                 errors.Add("Email", new string[] { "Este e-mail encontra-se em uso" });
         }
 
-        if(errors.Count > 0)
+        if (errors.Count > 0)
             throw new ValidationException(errors);
+    }
+
+    private User GetLoggedInUser()
+    {
+        User loggedInUser = _auth.LoggedInUser;
+        if (loggedInUser == null || loggedInUser.Active == false)
+            throw new AccessDeniedException("Usuário autenticado não encontrado ou desativado");
+        return loggedInUser;
     }
 }

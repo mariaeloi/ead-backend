@@ -7,16 +7,15 @@ namespace Services;
 public class AuthData
 {
     private readonly IHttpContextAccessor _accessor;
+    private readonly IUnitOfWork _uow;
 
     public AuthData(IHttpContextAccessor accessor, IUnitOfWork uow)
     {
         this._accessor = accessor;
-
-        this.LoggedInUser =  (this.Username is null) ? new User()
-            : uow.UserRepository.FindOne(u => u.Active && u.Username.ToLower().Equals(this.Username.ToLower()));
+        this._uow = uow;
     }
 
-    public string? Username
+    public long UserId
     {
         get
         {
@@ -25,11 +24,30 @@ public class AuthData
             {
                 var identity = context.User.Identity;
                 if(identity is not null)
-                    return identity.Name;
+                {
+                    var name = (identity.Name is null) ? "0" : identity.Name;
+                    return long.Parse(name, 0);
+                }
             }
-            return null;
+            return 0;
         }
     }
 
-    public User LoggedInUser { get; }
+    public User LoggedInUser
+    {
+        get
+        {
+            return (this.UserId == 0) ? new User()
+                : this._uow.UserRepository.FindOne(u => u.Id == this.UserId);
+        }
+    }
+
+    public User? LoggedInUserTracked
+    {
+        get
+        {
+            return (this.UserId == 0) ? null
+                : this._uow.UserRepository.FindOneTracked(u => u.Id == this.UserId);
+        }
+    }
 }
