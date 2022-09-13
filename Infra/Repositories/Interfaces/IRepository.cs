@@ -5,10 +5,10 @@ namespace Infra.Repositories.Interfaces;
 
 public interface IRepository<T> where T : Entity
 {
-    IEnumerable<T> FindAll(Expression<Func<T, bool>> predicate);
-    IEnumerable<T> FindAll();
-    T FindOne(Expression<Func<T, bool>> predicate);
-    T FindById(long id);
+    IEnumerable<T> FindAll(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> include = null);
+    IEnumerable<T> FindAll(Expression<Func<T, object>> include = null);
+    T FindOne(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> include = null);
+    T FindById(long id, Expression<Func<T, object>> include = null);
     T Create(T entity);
     T Update(T entity);
     void Delete(T entity);

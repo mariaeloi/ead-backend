@@ -13,17 +13,19 @@ public class CourseService : IService<Course>
     private readonly IUnitOfWork _uow;
     private AuthData _auth;
     private ILogService _logger;
+    private UserService _userService;
 
-    public CourseService(IUnitOfWork uow, AuthData auth, ILogService logger)
+    public CourseService(IUnitOfWork uow, AuthData auth, ILogService logger, UserService userService)
     {
         this._uow = uow;
         this._auth = auth;
         this._logger = logger;
+        this._userService = userService;
     }
 
     public List<Course> FindAll()
     {
-        List<Course> courses = _uow.CourseRepository.FindAll().ToList();
+        List<Course> courses = _uow.CourseRepository.FindAll(c => c.Students).ToList();
         if (courses.Count == 0)
             throw new Exception("Nenhum curso encontrado.");
 
@@ -47,9 +49,9 @@ public class CourseService : IService<Course>
 
     public Course GetById(long id)
     {
-        Course course = _uow.CourseRepository.FindById(id);
+        Course course = _uow.CourseRepository.FindById(id, c => c.Students);
         if (course == null)
-            throw new Exception("Não existe Curso com este ID.");
+            throw new NotFoundException("Não existe Curso com este ID.");
 
         //Busca as lições ativas do respectivo curso.
         course.Lessons = _uow.LessonRepository.FindAll(l => (l.Active && (l.CourseId == course.Id))).ToList();
@@ -80,8 +82,35 @@ public class CourseService : IService<Course>
         if (_auth.LoggedInUser.Id != course.OwnerId)
             throw new AccessDeniedException("Você não tem permissão para deletar este curso.");
 
-        Update(GetById(id)).UpdatedOn = DateTime.Now;
         _uow.CourseRepository.DeleteById(id);
         _logger.Log(ActionConstant.Delete, EntityNameConstant.Course, id);
     }
+
+    public void Subscribe(long idCourse)
+    {
+        User loggedInUser = this._userService.GetLoggedInUser();
+        Course course = this.GetById(idCourse);
+        course.Students.Add(loggedInUser);
+        _uow.CourseRepository.Update(course);
+        _logger.Log(ActionConstant.Subscribe, EntityNameConstant.Course, course.Id);
+    }
+
+    // public void Unsubscribe(long idCourse, long idStudent)
+    // {
+    //     User loggedInUser = this._userService.GetLoggedInUser();
+    //     if (loggedInUser.Id != idStudent && loggedInUser.Role != UserRole.Teacher)
+    //         throw new AccessDeniedException("Você não tem permissão para cancelar a matrícula deste usuário");
+
+    //     User student = this._uow.UserRepository.FindById(idStudent);
+    //     Course course = this.GetById(idCourse);
+    //     if (course.Students.Remove(course.Students.First(s => s.Id == idStudent)))
+    //     {
+    //         _uow.CourseRepository.Update(course);
+    //         _logger.Log(ActionConstant.Unsubscribe, EntityNameConstant.Course, course.Id);
+    //     }
+    //     else
+    //     {
+    //         throw new NotFoundException("Este usuário não está matriculado neste curso");
+    //     }
+    // }
 }

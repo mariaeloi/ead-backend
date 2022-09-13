@@ -117,7 +117,7 @@ public class UserService : IService<User>
             throw new ValidationException(errors);
     }
 
-    private User GetLoggedInUser()
+    public User GetLoggedInUser()
     {
         User loggedInUser = _auth.LoggedInUser;
         if (loggedInUser == null || loggedInUser.Active == false)

@@ -63,7 +63,7 @@ public class CourseController : ControllerBase
             Course course = service.GetById(id);
             return Ok(course);
         }
-        catch (Exception e)
+        catch (NotFoundException e)
         {
             return NotFound(e.Message);
         }
@@ -109,4 +109,48 @@ public class CourseController : ControllerBase
             return NotFound(e.Message);
         }
     }
+
+    /// <summary>
+    /// Realizar matrícula
+    /// </summary>
+    [HttpPut("{idCourse}/students")]
+    [Authorize(Roles = "Student")]
+    public IActionResult Subscribe([FromServices] CourseService service, [FromRoute] long idCourse)
+    {
+        try
+        {
+            service.Subscribe(idCourse);
+            return NoContent();
+        }
+        catch (AccessDeniedException e)
+        {
+            return Unauthorized(new { message = e.Message });
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(new { message = e.Message });
+        }
+    }
+
+    // /// <summary>
+    // /// Cancelar matrícula
+    // /// </summary>
+    // [HttpPut("{idCourse}/students/{idStudent}")]
+    // [Authorize(Roles = "Student")]
+    // public IActionResult Unsubscribe([FromServices] CourseService service, [FromRoute] long idCourse, [FromRoute] long idStudent)
+    // {
+    //     try
+    //     {
+    //         service.Unsubscribe(idCourse, idStudent);
+    //         return NoContent();
+    //     }
+    //     catch (AccessDeniedException e)
+    //     {
+    //         return Unauthorized(new { message = e.Message });
+    //     }
+    //     catch (NotFoundException e)
+    //     {
+    //         return NotFound(new { message = e.Message });
+    //     }
+    // }
 }
