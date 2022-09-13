@@ -3,6 +3,8 @@ using Infra.Repositories.Interfaces;
 using Services.Exceptions;
 using Services.Interfaces;
 using Domain.Enum;
+using Domain.Constants;
+#pragma warning restore format
 
 namespace Services;
 
@@ -10,11 +12,13 @@ public class CourseService : IService<Course>
 {
     private readonly IUnitOfWork _uow;
     private AuthData _auth;
+    private ILogService _logger;
 
-    public CourseService(IUnitOfWork uow, AuthData auth)
+    public CourseService(IUnitOfWork uow, AuthData auth, ILogService logger)
     {
         this._uow = uow;
         this._auth = auth;
+        this._logger = logger;
     }
 
     public List<Course> FindAll()
@@ -36,7 +40,9 @@ public class CourseService : IService<Course>
             throw new AccessDeniedException("Somente Professores podem criar cursos!");
         
         course.OwnerId = _auth.LoggedInUser.Id;
-        return _uow.CourseRepository.Create(course);
+        Course savedCourse = _uow.CourseRepository.Create(course);
+        _logger.Log(ActionConstant.Create, EntityNameConstant.Course, savedCourse.Id);
+        return savedCourse;
     }
 
     public Course GetById(long id)
@@ -59,7 +65,10 @@ public class CourseService : IService<Course>
         course.UpdatedOn = DateTime.Now;
         course.OwnerId = courseFull.OwnerId; 
         course.CreatedOn = courseFull.CreatedOn;  
-        return _uow.CourseRepository.Update(course);
+        
+        Course savedCourse = _uow.CourseRepository.Update(course);
+        _logger.Log(ActionConstant.Update, EntityNameConstant.Course, savedCourse.Id);
+        return savedCourse;
     }
 
     public void Delete(long id)
@@ -68,6 +77,8 @@ public class CourseService : IService<Course>
         if (_auth.LoggedInUser.Id != course.OwnerId)
             throw new AccessDeniedException("Você não tem permissão para deletar este curso.");
 
+        Update(GetById(id)).UpdatedOn = DateTime.Now;
         _uow.CourseRepository.DeleteById(id);
+        _logger.Log(ActionConstant.Delete, EntityNameConstant.Course, id);
     }
 }
