@@ -73,7 +73,10 @@ public class CourseService : IService<Course>
 
     public void Delete(long id)
     {
-        Course course = GetById(id);
+        Course course = _uow.CourseRepository.FindById(id);
+        if (course == null)
+            throw new NotFoundException("Não existe Curso com este ID.");
+
         if (_auth.LoggedInUser.Id != course.OwnerId)
             throw new AccessDeniedException("Você não tem permissão para deletar este curso.");
 

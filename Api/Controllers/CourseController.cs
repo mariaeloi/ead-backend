@@ -104,5 +104,9 @@ public class CourseController : ControllerBase
         {
             return Unauthorized(new { message = e.Message });
         }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
     }
 }
