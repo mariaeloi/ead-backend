@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.Exceptions;
@@ -36,6 +37,7 @@ public class CourseController : ControllerBase
     /// Adicionar Curso
     /// </summary>
     [HttpPost]
+    [Authorize(Roles = "Teacher")]
     public IActionResult Post([FromServices] CourseService service, [FromBody] Course curso)
     {
         try
@@ -71,6 +73,7 @@ public class CourseController : ControllerBase
     /// Atualizar curso
     /// </summary>
     [HttpPut("{id}")]
+    [Authorize(Roles = "Teacher")]
     public IActionResult Update([FromServices] CourseService service, [FromBody] Course course, long id)
     {
         try
@@ -89,6 +92,7 @@ public class CourseController : ControllerBase
     /// Remover curso
     /// </summary>
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Teacher")]
     public IActionResult Delete([FromServices] CourseService service, long id)
     {
         try
