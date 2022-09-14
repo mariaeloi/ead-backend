@@ -132,25 +132,25 @@ public class CourseController : ControllerBase
         }
     }
 
-    // /// <summary>
-    // /// Cancelar matrícula
-    // /// </summary>
-    // [HttpPut("{idCourse}/students/{idStudent}")]
-    // [Authorize(Roles = "Student")]
-    // public IActionResult Unsubscribe([FromServices] CourseService service, [FromRoute] long idCourse, [FromRoute] long idStudent)
-    // {
-    //     try
-    //     {
-    //         service.Unsubscribe(idCourse, idStudent);
-    //         return NoContent();
-    //     }
-    //     catch (AccessDeniedException e)
-    //     {
-    //         return Unauthorized(new { message = e.Message });
-    //     }
-    //     catch (NotFoundException e)
-    //     {
-    //         return NotFound(new { message = e.Message });
-    //     }
-    // }
+    /// <summary>
+    /// Cancelar matrícula
+    /// </summary>
+    [HttpPut("{idCourse}/students/{idStudent}")]
+    [Authorize(Roles = "Student")]
+    public IActionResult Unsubscribe([FromServices] CourseService service, [FromRoute] long idCourse, [FromRoute] long idStudent)
+    {
+        try
+        {
+            service.Unsubscribe(idCourse, idStudent);
+            return NoContent();
+        }
+        catch (AccessDeniedException e)
+        {
+            return Unauthorized(new { message = e.Message });
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(new { message = e.Message });
+        }
+    }
 }

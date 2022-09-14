@@ -78,9 +78,11 @@ public class Repository<T> : IRepository<T> where T : Entity
         this.Delete(entity);
     }
 
-    public T FindOneTracked(Expression<Func<T, bool>> predicate)
+    public T FindOneTracked(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> include = null)
     {
-        T entity = dbSet.FirstOrDefault(predicate);
-        return entity;
+        if (include == null)
+            return dbSet.Where(predicate).FirstOrDefault();
+        else
+            return dbSet.Where(predicate).Include(include).FirstOrDefault();
     }
 }

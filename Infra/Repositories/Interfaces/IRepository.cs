@@ -13,5 +13,5 @@ public interface IRepository<T> where T : Entity
     T Update(T entity);
     void Delete(T entity);
     void DeleteById(long id);
-    T FindOneTracked(Expression<Func<T, bool>> predicate);
+    T FindOneTracked(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> include = null);
 }

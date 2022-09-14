@@ -95,22 +95,13 @@ public class CourseService : IService<Course>
         _logger.Log(ActionConstant.Subscribe, EntityNameConstant.Course, course.Id);
     }
 
-    // public void Unsubscribe(long idCourse, long idStudent)
-    // {
-    //     User loggedInUser = this._userService.GetLoggedInUser();
-    //     if (loggedInUser.Id != idStudent && loggedInUser.Role != UserRole.Teacher)
-    //         throw new AccessDeniedException("Você não tem permissão para cancelar a matrícula deste usuário");
+    public void Unsubscribe(long idCourse, long idStudent)
+    {
+        User loggedInUser = this._userService.GetLoggedInUser();
+        if (loggedInUser.Id != idStudent && loggedInUser.Role != UserRole.Teacher)
+            throw new AccessDeniedException("Você não tem permissão para cancelar a matrícula deste usuário");
 
-    //     User student = this._uow.UserRepository.FindById(idStudent);
-    //     Course course = this.GetById(idCourse);
-    //     if (course.Students.Remove(course.Students.First(s => s.Id == idStudent)))
-    //     {
-    //         _uow.CourseRepository.Update(course);
-    //         _logger.Log(ActionConstant.Unsubscribe, EntityNameConstant.Course, course.Id);
-    //     }
-    //     else
-    //     {
-    //         throw new NotFoundException("Este usuário não está matriculado neste curso");
-    //     }
-    // }
+        _userService.UnsubscribeCourse(idCourse, idStudent);
+        _logger.Log(ActionConstant.Unsubscribe, EntityNameConstant.Course, idCourse);
+    }
 }
