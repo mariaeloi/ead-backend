@@ -114,7 +114,7 @@ public class CourseController : ControllerBase
     /// Realizar matrícula
     /// </summary>
     [HttpPut("{idCourse}/students")]
-    [Authorize(Roles = "Student")]
+    [Authorize]
     public IActionResult Subscribe([FromServices] CourseService service, [FromRoute] long idCourse)
     {
         try
@@ -136,7 +136,7 @@ public class CourseController : ControllerBase
     /// Cancelar matrícula
     /// </summary>
     [HttpPut("{idCourse}/students/{idStudent}")]
-    [Authorize(Roles = "Student")]
+    [Authorize]
     public IActionResult Unsubscribe([FromServices] CourseService service, [FromRoute] long idCourse, [FromRoute] long idStudent)
     {
         try

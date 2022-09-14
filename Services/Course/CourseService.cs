@@ -97,8 +97,9 @@ public class CourseService : IService<Course>
 
     public void Unsubscribe(long idCourse, long idStudent)
     {
+        Course course = this.GetById(idCourse);
         User loggedInUser = this._userService.GetLoggedInUser();
-        if (loggedInUser.Id != idStudent && loggedInUser.Role != UserRole.Teacher)
+        if (loggedInUser.Id != idStudent && loggedInUser.Id != course.OwnerId)
             throw new AccessDeniedException("Você não tem permissão para cancelar a matrícula deste usuário");
 
         _userService.UnsubscribeCourse(idCourse, idStudent);
