@@ -4,7 +4,6 @@ using Services.Exceptions;
 using Services.Interfaces;
 using Domain.Enum;
 using Domain.Constants;
-#pragma warning restore format
 
 namespace Services;
 
