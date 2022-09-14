@@ -35,7 +35,7 @@ public class CourseMap : IEntityTypeConfiguration<Course>
             .HasColumnType("varchar")
             .HasMaxLength(50)
             .IsRequired();
-        builder.HasIndex(u => u.Title).IsUnique();
+        //builder.HasIndex(u => u.Title).IsUnique();
 
         builder.Property(x => x.Description)
             .HasColumnName("description")

@@ -117,11 +117,32 @@ public class UserService : IService<User>
             throw new ValidationException(errors);
     }
 
-    private User GetLoggedInUser()
+    public User GetLoggedInUser()
     {
         User loggedInUser = _auth.LoggedInUser;
         if (loggedInUser == null || loggedInUser.Active == false)
             throw new AccessDeniedException("Usuário autenticado não encontrado ou desativado");
         return loggedInUser;
+    }
+
+    public void UnsubscribeCourse(long idCourse, long idStudent)
+    {
+        User student = _uow.UserRepository.FindOneTracked(
+            predicate: s => s.Active && s.Id == idStudent, 
+            include: s => s.Courses
+        );
+        if (student == null)
+            throw new NotFoundException("Usuário não encontrado");
+
+        Course? course = student.Courses.FirstOrDefault(s => s.Id == idCourse);
+        if (student.Courses.Remove(course))
+        {
+            _uow.UserRepository.Update(student);
+            _logger.Log(ActionConstant.Unsubscribe, ENTITY_NAME, student.Id);
+        }
+        else
+        {
+            throw new NotFoundException("Este usuário não está matriculado neste curso");
+        }
     }
 }

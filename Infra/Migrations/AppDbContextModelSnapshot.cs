@@ -77,9 +77,6 @@ namespace Infra.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("Title")
-                        .IsUnique();
-
                     b.ToTable("courses", (string)null);
                 });
 
@@ -131,9 +128,6 @@ namespace Infra.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
-
-                    b.HasIndex("Link")
-                        .IsUnique();
 
                     b.ToTable("lessons", (string)null);
                 });

@@ -18,27 +18,36 @@ public class Repository<T> : IRepository<T> where T : Entity
         dbSet = context.Set<T>();
     }
 
-    public IEnumerable<T> FindAll(Expression<Func<T, bool>> predicate)
+    public IEnumerable<T> FindAll(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> include = null)
     {
-        return dbSet.Where(predicate);
+        if (include == null)
+            return dbSet.Where(predicate);
+        else
+            return dbSet.Where(predicate).Include(include);
     }
 
-    public IEnumerable<T> FindAll()
+    public IEnumerable<T> FindAll(Expression<Func<T, object>> include = null)
     {
-        return this.FindAll(x => x.Active);
+        return this.FindAll(x => x.Active, include);
     }
     
-    public T FindOne(Expression<Func<T, bool>> predicate)
+    public T FindOne(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> include = null)
     {
-        T entity = dbSet.FirstOrDefault(predicate);
+        // T entity = dbSet.Include(include).FirstOrDefault(predicate);
+        T entity;
+        if (include == null)
+            entity = dbSet.Where(predicate).FirstOrDefault();
+        else
+            entity = dbSet.Where(predicate).Include(include).FirstOrDefault();
+
         if(entity != null)
             context.Entry(entity).State = EntityState.Detached;
         return entity;
     }
 
-    public T FindById(long id)
+    public T FindById(long id, Expression<Func<T, object>> include = null)
     {
-        return this.FindOne(x => (x.Active && (x.Id == id)));
+        return this.FindOne(x => (x.Active && (x.Id == id)), include);
     }
 
     public T Create(T entity)
@@ -58,6 +67,7 @@ public class Repository<T> : IRepository<T> where T : Entity
     public void Delete(T entity)
     {
         entity.Active = false;
+        entity.UpdatedOn = DateTime.Now;
         dbSet.Update(entity);
         context.SaveChanges();
     }
@@ -68,9 +78,11 @@ public class Repository<T> : IRepository<T> where T : Entity
         this.Delete(entity);
     }
 
-    public T FindOneTracked(Expression<Func<T, bool>> predicate)
+    public T FindOneTracked(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> include = null)
     {
-        T entity = dbSet.FirstOrDefault(predicate);
-        return entity;
+        if (include == null)
+            return dbSet.Where(predicate).FirstOrDefault();
+        else
+            return dbSet.Where(predicate).Include(include).FirstOrDefault();
     }
 }
