@@ -11,7 +11,7 @@ namespace Api.Controllers;
 /// Lesson Controller
 /// </summary>
 [ApiController]
-[Route("course")]
+[Route("courses")]
 public class LessonController : ControllerBase
 {
     /// <summary>
@@ -36,7 +36,7 @@ public class LessonController : ControllerBase
     /// <summary>
     /// Adicionar Lição
     /// </summary>
-    [HttpPost("{courseId}/lesson")]
+    [HttpPost("{courseId}/lessons")]
     [Authorize(Roles = "Teacher")]
     public IActionResult Post([FromRoute] long courseId, [FromBody] Lesson lesson, [FromServices] LessonService service)
     {
@@ -50,5 +50,22 @@ public class LessonController : ControllerBase
             return Unauthorized(new { message = e.Message });
         }
         
+    }
+
+    /// <summary>
+    /// Buscar aula por ID
+    /// </summary>
+    [HttpGet("lessons/{id}")]
+    public IActionResult GetById([FromServices] LessonService service, long id)
+    {
+        try
+        {
+            Lesson lesson = service.GetById(id);
+            return Ok(lesson);
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
     }
 }

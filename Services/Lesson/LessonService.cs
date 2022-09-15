@@ -46,7 +46,11 @@ public class LessonService
 
     public Lesson GetById(long id)
     {
-        return _uow.LessonRepository.FindById(id);
+        Lesson lesson = _uow.LessonRepository.FindById(id);
+        if (lesson == null)
+            throw new NotFoundException("Não existe aula com este ID.");
+
+        return lesson; 
     }
 
     public Lesson Update(Lesson lesson)
