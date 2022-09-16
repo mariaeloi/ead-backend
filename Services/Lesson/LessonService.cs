@@ -63,7 +63,7 @@ public class LessonService
         Course course = _uow.CourseRepository.FindById(courseId);
 
         if (_auth.LoggedInUser.Id != course.OwnerId)
-            throw new AccessDeniedException("Somente o professor e proprietário desta aula pode edita-la.");
+            throw new AccessDeniedException("Somente o professor e proprietário desta aula pode editá-la.");
         
         lesson.UpdatedOn = DateTime.Now;
         lesson.CourseId = courseId;
@@ -73,6 +73,16 @@ public class LessonService
 
     public void Delete(long id)
     {
+        Lesson lesson = _uow.LessonRepository.FindById(id);
+        if (lesson == null)
+            throw new NotFoundException("Não existe aula com este ID.");
+        
+        long courseId = lesson.CourseId;
+        Course course = _uow.CourseRepository.FindById(courseId);
+        if (_auth.LoggedInUser.Id != course.OwnerId)
+            throw new AccessDeniedException("Somente o professor e proprietário desta aula pode excluí-la.");
+
+        _logger.Log(ActionConstant.Delete, EntityNameConstant.Lesson, lesson.Id);
         _uow.LessonRepository.DeleteById(id);
     }
 

@@ -95,4 +95,26 @@ public class LessonController : ControllerBase
             return NotFound(new { message = e.Message });
         }
     }
+
+    /// <summary>
+    /// Remover aula
+    /// </summary>
+    [HttpDelete("lessons/{id}")]
+    [Authorize(Roles = "Teacher")]
+    public IActionResult Delete([FromServices] LessonService service, long id)
+    {
+        try
+        {
+            service.Delete(id);
+            return NoContent();
+        }
+        catch (AccessDeniedException e)
+        {
+            return Unauthorized(new { message = e.Message });
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+    }
 }
