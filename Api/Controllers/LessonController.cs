@@ -15,7 +15,7 @@ namespace Api.Controllers;
 public class LessonController : ControllerBase
 {
     /// <summary>
-    /// Buscar todas as lições
+    /// Buscar todas as aulas
     /// </summary>
     [HttpGet("lessons")]
     public IActionResult GetAll([FromServices] LessonService service)
@@ -34,7 +34,7 @@ public class LessonController : ControllerBase
     }
 
     /// <summary>
-    /// Adicionar Lição
+    /// Adicionar aula
     /// </summary>
     [HttpPost("{courseId}/lessons")]
     [Authorize(Roles = "Teacher")]
@@ -48,6 +48,10 @@ public class LessonController : ControllerBase
         catch (AccessDeniedException e)
         {
             return Unauthorized(new { message = e.Message });
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(new { message = e.Message });
         }
         
     }
@@ -66,6 +70,29 @@ public class LessonController : ControllerBase
         catch (NotFoundException e)
         {
             return NotFound(e.Message);
+        }
+    }
+
+    /// <summary>
+    /// Atualizar aula
+    /// </summary>
+    [HttpPut("lessons/{id}")]
+    [Authorize(Roles = "Teacher")]
+    public IActionResult Update([FromServices] LessonService service, [FromBody] Lesson lesson, long id)
+    {
+        try
+        {
+            lesson.Id = id;
+            lesson = service.Update(lesson);
+            return Ok(lesson);
+        }
+        catch (AccessDeniedException e)
+        {
+            return Unauthorized(new { message = e.Message });
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(new { message = e.Message });
         }
     }
 }
