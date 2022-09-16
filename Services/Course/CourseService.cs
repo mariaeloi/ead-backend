@@ -88,7 +88,10 @@ public class CourseService : IService<Course>
     public void Subscribe(long idCourse)
     {
         User loggedInUser = this._userService.GetLoggedInUser();
-        Course course = this.GetById(idCourse);
+        Course course = this._uow.CourseRepository.FindById(idCourse);
+        if (course == null)
+            throw new NotFoundException("Não existe Curso com este ID.");
+
         course.Students.Add(loggedInUser);
         _uow.CourseRepository.Update(course);
         _logger.Log(ActionConstant.Subscribe, EntityNameConstant.Course, course.Id);

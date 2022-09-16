@@ -117,10 +117,10 @@ public class UserService : IService<User>
             throw new ValidationException(errors);
     }
 
-    public User GetLoggedInUser()
+    public User GetLoggedInUser(bool tracked = false)
     {
-        User loggedInUser = _auth.LoggedInUser;
-        if (loggedInUser == null || loggedInUser.Active == false)
+        User? loggedInUser = tracked ? this._auth.LoggedInUserTracked : this._auth.LoggedInUser;
+        if (loggedInUser == null || loggedInUser.Active == false || loggedInUser.Id == 0)
             throw new AccessDeniedException("Usuário autenticado não encontrado ou desativado");
         return loggedInUser;
     }
