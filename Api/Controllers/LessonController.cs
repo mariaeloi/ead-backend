@@ -53,6 +53,10 @@ public class LessonController : ControllerBase
         {
             return NotFound(new { message = e.Message });
         }
+        catch (ValidationException e)
+        {
+            return BadRequest(e.Errors);
+        }
         
     }
 
@@ -93,6 +97,10 @@ public class LessonController : ControllerBase
         catch (NotFoundException e)
         {
             return NotFound(new { message = e.Message });
+        }
+        catch (ValidationException e)
+        {
+            return BadRequest(e.Errors);
         }
     }
 

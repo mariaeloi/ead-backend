@@ -82,6 +82,7 @@ public class Startup
         services.AddTransient<LessonService>();
 
         services.AddScoped<IValidator<User>, UserValidator>();
+        services.AddScoped<IValidator<Lesson>, LessonValidator>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

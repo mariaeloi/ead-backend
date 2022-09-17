@@ -12,12 +12,14 @@ public class LessonService
     private readonly IUnitOfWork _uow;
     private AuthData _auth;
     private ILogService _logger;
+    private readonly FluentValidation.IValidator<Lesson> _validator;
 
-    public LessonService(IUnitOfWork uow, AuthData auth, ILogService logger)
+    public LessonService(IUnitOfWork uow, AuthData auth, ILogService logger, FluentValidation.IValidator<Lesson> validator)
     {
         this._uow = uow;
         this._auth = auth;
         this._logger = logger;
+        this._validator = validator;
     }
 
     public List<Lesson> FindAll()
@@ -38,6 +40,8 @@ public class LessonService
         if (_auth.LoggedInUser.Role != UserRole.Teacher || (_auth.LoggedInUser.Id != course.OwnerId))
             throw new AccessDeniedException("Somente o professor e proprietário deste curso pode adicionar aula a ele.");
             
+        this.Validate(lesson, courseId);
+
         lesson.CourseId = courseId;
         course.Lessons.Add(lesson);
         Lesson savedLesson = _uow.LessonRepository.Create(lesson);
@@ -64,9 +68,12 @@ public class LessonService
 
         if (_auth.LoggedInUser.Id != course.OwnerId)
             throw new AccessDeniedException("Somente o professor e proprietário desta aula pode editá-la.");
-        
+      
         lesson.UpdatedOn = DateTime.Now;
         lesson.CourseId = courseId;
+
+        this.Validate(lesson, lesson.CourseId);
+
         _logger.Log(ActionConstant.Update, EntityNameConstant.Lesson, lesson.Id); 
         return _uow.LessonRepository.Update(lesson);
     }
@@ -86,8 +93,18 @@ public class LessonService
         _uow.LessonRepository.DeleteById(id);
     }
 
-    // public List<Lesson> GetLessonsBycoureId(long id)
-    // {
-    //     return T;
-    // }
+    public void Validate(Lesson lesson, long id)
+    {
+        var errors = _validator.Validate(lesson).ToDictionary();
+
+        if (!errors.ContainsKey("Order"))
+        {
+            Lesson lessonOrderExist = _uow.LessonRepository.FindOne(l => l.Order == lesson.Order && (l.CourseId == id));
+            if (lessonOrderExist != null)
+                errors.Add("Order", new string[] { "Já existe uma aula com esta ordenação." });
+        }
+
+        if (errors.Count > 0)
+            throw new ValidationException(errors);
+    }
 }
