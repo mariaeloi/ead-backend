@@ -13,13 +13,15 @@ public class CourseService : IService<Course>
     private AuthData _auth;
     private ILogService _logger;
     private UserService _userService;
+    private readonly FluentValidation.IValidator<Course> _validator;
 
-    public CourseService(IUnitOfWork uow, AuthData auth, ILogService logger, UserService userService)
+    public CourseService(IUnitOfWork uow, AuthData auth, ILogService logger, UserService userService, FluentValidation.IValidator<Course> validator)
     {
         this._uow = uow;
         this._auth = auth;
         this._logger = logger;
         this._userService = userService;
+        this._validator = validator;
     }
 
     public List<Course> FindAll()
@@ -41,6 +43,9 @@ public class CourseService : IService<Course>
             throw new AccessDeniedException("Somente Professores podem criar cursos!");
         
         course.OwnerId = _auth.LoggedInUser.Id;
+
+        this.Validate(course);
+
         Course savedCourse = _uow.CourseRepository.Create(course);
         _logger.Log(ActionConstant.Create, EntityNameConstant.Course, savedCourse.Id);
         return savedCourse;
@@ -65,7 +70,9 @@ public class CourseService : IService<Course>
 
         course.UpdatedOn = DateTime.Now;
         course.OwnerId = courseFull.OwnerId; 
-        course.CreatedOn = courseFull.CreatedOn;  
+        course.CreatedOn = courseFull.CreatedOn;
+
+         this.Validate(course); 
         
         Course savedCourse = _uow.CourseRepository.Update(course);
         _logger.Log(ActionConstant.Update, EntityNameConstant.Course, savedCourse.Id);
@@ -106,5 +113,20 @@ public class CourseService : IService<Course>
 
         _userService.UnsubscribeCourse(idCourse, idStudent);
         _logger.Log(ActionConstant.Unsubscribe, EntityNameConstant.Course, idCourse);
+    }
+
+    public void Validate(Course course)
+    {
+        var errors = _validator.Validate(course).ToDictionary();
+
+        if (!errors.ContainsKey("Title"))
+        {
+            Course courseExist = _uow.CourseRepository.FindOne(c => c.Id != course.Id && c.Title.ToLower().Equals(course.Title.ToLower()));
+            if (courseExist != null)
+                errors.Add("Title", new string[] { "Já existe um Curso com este Título." });
+        }
+
+        if (errors.Count > 0)
+            throw new ValidationException(errors);
     }
 }

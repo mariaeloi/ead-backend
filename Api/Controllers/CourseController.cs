@@ -49,6 +49,10 @@ public class CourseController : ControllerBase
         {
             return Unauthorized(new { message = e.Message });
         }
+        catch (ValidationException e)
+        {
+            return BadRequest(e.Errors);
+        }
         
     }
 
@@ -85,6 +89,10 @@ public class CourseController : ControllerBase
         catch (AccessDeniedException e)
         {
             return Unauthorized(new { message = e.Message });
+        }
+        catch (ValidationException e)
+        {
+            return BadRequest(e.Errors);
         }
     }
 
