@@ -111,4 +111,25 @@ public class UserController : ControllerBase
             return NotFound(new { message = e.Message });
         }
     }
+
+    /// <summary>
+    /// Buscar cursos que o usuário está matriculado
+    /// </summary>
+    [HttpGet("{id}/courses")]
+    public IActionResult GetCourses([FromServices] UserService service, long id)
+    {
+        try
+        {
+            var courses = service.GetCourses(id);
+            return Ok(courses);
+        }
+        catch (AccessDeniedException e)
+        {
+            return Unauthorized(new { message = e.Message });
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(new { message = e.Message });
+        }
+    }
 }

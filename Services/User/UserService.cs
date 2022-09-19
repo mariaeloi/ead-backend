@@ -145,4 +145,19 @@ public class UserService : IService<User>
             throw new NotFoundException("Este usuário não está matriculado neste curso");
         }
     }
+
+    public ICollection<Course> GetCourses(long id)
+    {
+        User user = _uow.UserRepository.FindById(id, include: u => u.Courses);
+        if (user == null)
+            throw new NotFoundException("Usuário não encontrado");
+
+        if (user.Id != this.GetLoggedInUser().Id)
+            throw new AccessDeniedException("Você não tem permissão para visualizar os cursos deste usuário");
+
+        if (user.Courses.Count < 1)
+            throw new NotFoundException("Nenhum curso encontrado");
+
+        return user.Courses;
+    }
 }
