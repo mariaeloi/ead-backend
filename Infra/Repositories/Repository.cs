@@ -18,17 +18,21 @@ public class Repository<T> : IRepository<T> where T : Entity
         dbSet = context.Set<T>();
     }
 
-    public IEnumerable<T> FindAll(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> include = null)
+    public IEnumerable<T> FindAll(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> include = null,
+        Expression<Func<T, object>> order = null)
     {
+        if(order == null)
+            order = x => x.Id;
+
         if (include == null)
-            return dbSet.Where(predicate);
+            return dbSet.Where(predicate).OrderBy(order);
         else
-            return dbSet.Where(predicate).Include(include);
+            return dbSet.Where(predicate).Include(include).OrderBy(order);
     }
 
-    public IEnumerable<T> FindAll(Expression<Func<T, object>> include = null)
+    public IEnumerable<T> FindAll(Expression<Func<T, object>> include = null, Expression<Func<T, object>> order = null)
     {
-        return this.FindAll(x => x.Active, include);
+        return this.FindAll(x => x.Active, include, order);
     }
     
     public T FindOne(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> include = null)

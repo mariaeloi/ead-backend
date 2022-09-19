@@ -14,7 +14,7 @@ public class LessonValidator : AbstractValidator<Lesson>
         
         RuleFor(l => l.Link)
             .NotEmpty().WithMessage("Um link deve ser informado.")
-            .MinimumLength(8).WithMessage("O Título deve ter no mínimo 8 caracteres.")
+            .MinimumLength(8).WithMessage("O link deve ter no mínimo 8 caracteres.")
             .MaximumLength(240).WithMessage("O link deve ter no máximo 240 caracteres.");
 
         RuleFor(l => l.Description)

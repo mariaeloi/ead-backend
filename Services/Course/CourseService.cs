@@ -32,7 +32,10 @@ public class CourseService : IService<Course>
 
         foreach (var course in courses)
         {
-            course.Lessons = _uow.LessonRepository.FindAll(l => (l.Active && (l.CourseId == course.Id))).ToList();
+            course.Lessons = _uow.LessonRepository.FindAll(
+                predicate: l => (l.Active && (l.CourseId == course.Id)),
+                order: l => l.Order
+            ).ToList();
         }
         return courses;
     }
@@ -58,7 +61,10 @@ public class CourseService : IService<Course>
             throw new NotFoundException("Não existe Curso com este ID.");
 
         //Busca as lições ativas do respectivo curso.
-        course.Lessons = _uow.LessonRepository.FindAll(l => (l.Active && (l.CourseId == course.Id))).ToList();
+        course.Lessons = _uow.LessonRepository.FindAll(
+                predicate: l => (l.Active && (l.CourseId == course.Id)),
+                order: l => l.Order
+            ).ToList();
         return course;
     }
 
