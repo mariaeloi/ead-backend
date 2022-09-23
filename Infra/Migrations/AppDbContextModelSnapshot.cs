@@ -47,15 +47,11 @@ namespace Infra.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<bool>("Active")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(true)
                         .HasColumnName("active");
 
                     b.Property<DateTime>("CreatedOn")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2022, 9, 6, 12, 49, 41, 301, DateTimeKind.Local).AddTicks(2804))
                         .HasColumnName("created_on");
 
                     b.Property<string>("Description")
@@ -81,9 +77,6 @@ namespace Infra.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("Title")
-                        .IsUnique();
-
                     b.ToTable("courses", (string)null);
                 });
 
@@ -97,18 +90,14 @@ namespace Infra.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<bool>("Active")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(true)
                         .HasColumnName("active");
 
                     b.Property<long>("CourseId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreatedOn")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2022, 9, 6, 12, 49, 41, 302, DateTimeKind.Local).AddTicks(2138))
                         .HasColumnName("created_on");
 
                     b.Property<string>("Description")
@@ -140,10 +129,46 @@ namespace Infra.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.HasIndex("Link")
-                        .IsUnique();
-
                     b.ToTable("lessons", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Log", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("varchar")
+                        .HasColumnName("action");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp")
+                        .HasColumnName("date");
+
+                    b.Property<long>("EntityId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("entity_id");
+
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar")
+                        .HasColumnName("entity_name");
+
+                    b.Property<long?>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("logs", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -156,15 +181,11 @@ namespace Infra.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<bool>("Active")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(true)
                         .HasColumnName("active");
 
                     b.Property<DateTime>("CreatedOn")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2022, 9, 6, 12, 49, 41, 299, DateTimeKind.Local).AddTicks(5542))
                         .HasColumnName("created_on");
 
                     b.Property<string>("Email")
@@ -248,6 +269,15 @@ namespace Infra.Migrations
                         .HasConstraintName("FK_Lesson_Course_CourseID");
 
                     b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Log", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Entities.Course", b =>

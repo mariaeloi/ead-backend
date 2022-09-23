@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Services;
 using Services.Interfaces;
+using Services.Logger;
 
 namespace Api;
 
@@ -74,12 +75,15 @@ public class Startup
         services.AddTransient<AuthService>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddScoped<AuthData>();
-        
+
+        services.AddTransient<ILogService, LogService>();        
         services.AddTransient<UserService>();
         services.AddTransient<CourseService>();
         services.AddTransient<LessonService>();
 
         services.AddScoped<IValidator<User>, UserValidator>();
+        services.AddScoped<IValidator<Lesson>, LessonValidator>();
+        services.AddScoped<IValidator<Course>, CourseValidator>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

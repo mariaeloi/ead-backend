@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infra.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220904162546_Relationship")]
-    partial class Relationship
+    [Migration("20220912153219_Database")]
+    partial class Database
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -29,14 +29,14 @@ namespace Infra.Migrations
                     b.Property<long>("CoursesId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("UsersId")
+                    b.Property<long>("StudentsId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("CoursesId", "UsersId");
+                    b.HasKey("CoursesId", "StudentsId");
 
-                    b.HasIndex("UsersId");
+                    b.HasIndex("StudentsId");
 
-                    b.ToTable("CousersUsers", (string)null);
+                    b.ToTable("CousersStudents", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Course", b =>
@@ -62,6 +62,9 @@ namespace Infra.Migrations
                         .HasColumnType("varchar")
                         .HasColumnName("description");
 
+                    b.Property<long>("OwnerId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -74,8 +77,7 @@ namespace Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Title")
-                        .IsUnique();
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("courses", (string)null);
                 });
@@ -129,10 +131,46 @@ namespace Infra.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.HasIndex("Link")
-                        .IsUnique();
-
                     b.ToTable("lessons", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Log", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("varchar")
+                        .HasColumnName("action");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp")
+                        .HasColumnName("date");
+
+                    b.Property<long>("EntityId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("entity_id");
+
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar")
+                        .HasColumnName("entity_name");
+
+                    b.Property<long?>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("logs", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -207,9 +245,20 @@ namespace Infra.Migrations
 
                     b.HasOne("Domain.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("UsersId")
+                        .HasForeignKey("StudentsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.Course", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("Domain.Entities.Lesson", b =>
@@ -222,6 +271,15 @@ namespace Infra.Migrations
                         .HasConstraintName("FK_Lesson_Course_CourseID");
 
                     b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Log", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Entities.Course", b =>
