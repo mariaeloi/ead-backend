@@ -89,10 +89,10 @@ public class Startup
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+        app.UsePathBase("/api");
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
-            app.UsePathBase("/api");
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
@@ -122,5 +122,11 @@ public class Startup
         {
             endpoints.MapControllers();
         });
+
+        using(var scope = app.ApplicationServices.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            dbContext.Database.Migrate();
+        }
     }
 }

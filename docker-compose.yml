@@ -1,0 +1,45 @@
+version: '3.9'
+
+networks:
+  enigmas-network:
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:14
+    container_name: postgres_enigmas
+    hostname: postgres_enigmas
+    ports:
+      - 5433:5432
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ead_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: "America/Fortaleza"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d ead_db -U postgres"]
+      interval: 10s
+      timeout: 30s
+      retries: 3
+    networks:
+      - enigmas-network
+
+  backend:
+    container_name: enigmas-api
+    build: .
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - 5001:80
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://127.0.0.1:5001/api"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - enigmas-network

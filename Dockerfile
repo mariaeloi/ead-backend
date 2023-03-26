@@ -1,11 +1,20 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0
-WORKDIR /ead-backend
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+WORKDIR /App
 
+# Copy everything
 COPY . .
+# Restore as distinct layers
+RUN dotnet restore
 
-EXPOSE 5000
-EXPOSE 5001
+RUN dotnet dev-certs https
+RUN dotnet dev-certs https --trust
 
-RUN chmod +x dotnetef.sh
+# Build and publish a release
+WORKDIR /App/Api
+RUN dotnet publish -c Release -o out
 
-ENTRYPOINT [ "./dotnetef.sh" ]
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+WORKDIR /App
+COPY --from=build-env /App/Api/out .
+ENTRYPOINT ["dotnet", "Api.dll"]
