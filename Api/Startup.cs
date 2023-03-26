@@ -112,7 +112,7 @@ public class Startup
             .AllowAnyHeader()
             .AllowCredentials()
         );
-        app.UseHttpsRedirection();
+        // app.UseHttpsRedirection();
 
         app.UseRouting();
         app.UseAuthentication();
