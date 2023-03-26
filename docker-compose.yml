@@ -35,9 +35,10 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - 5001:80
+      - 5001:443
+      - 5000:80
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://127.0.0.1:5001/api"]
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:5000/api"]
       interval: 10s
       timeout: 3s
       retries: 3

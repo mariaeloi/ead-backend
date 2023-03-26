@@ -11,10 +11,10 @@ RUN dotnet dev-certs https --trust
 
 # Build and publish a release
 WORKDIR /App/Api
-RUN dotnet publish -c Release -o out
+RUN dotnet publish --no-restore -c Release -o out
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /App
 COPY --from=build-env /App/Api/out .
-ENTRYPOINT ["dotnet", "Api.dll"]
+ENTRYPOINT ["dotnet", "Api.dll", "--launch-profile", "Api-Production"]
